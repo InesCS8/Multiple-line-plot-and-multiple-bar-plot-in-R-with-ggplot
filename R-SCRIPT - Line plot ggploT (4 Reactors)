@@ -1,0 +1,102 @@
+#0. Importar datos
+
+library(readr)
+X<- read_delim("C:/Users/Admin/Desktop/DEPARTAMENTO X/Resistencia reactores/51 VD.csv", 
+delim = ";", escape_double = FALSE, trim_ws = TRUE)
+#View(X)
+
+#1.crear dataset de tension y intensidad por cada reactor
+
+TR1<-X[X$senalid == "1559",]
+TR2<-X[X$senalid == "1561",]
+TR3<-X[X$senalid == "1563",]
+TR4<-X[X$senalid == "1565",]
+
+CR1<-X[X$senalid == "3604",]
+CR2<-X[X$senalid == "3605",]
+CR3<-X[X$senalid == "3606",]
+CR4<-X[X$senalid == "3607",]
+
+R1<-merge(TR1, CR1, by = "fecha", all = FALSE)
+names (R1)[3] = "Tension_R1" #renombro columna
+names (R1)[6] = "Corriente_R1" #renombro columna
+R1<-R1[,-7] #elimino columna 
+R1<-R1[,-5] #elimino columna 
+R1<-R1[,-4] #elimino columna 
+
+
+R2<-merge(TR2, CR2, by = "fecha", all = FALSE)
+names (R2)[3] = "Tension_R2" #renombro columna
+names (R2)[6] = "Corriente_R2" #renombro columna
+R2<-R2[,-7] #elimino columna 
+R2<-R2[,-5] #elimino columna 
+R2<-R2[,-4] #elimino columna 
+
+R3<-merge(TR3, CR3, by = "fecha", all = FALSE)
+names (R3)[3] = "Tension_R3" #renombro columna
+names (R3)[6] = "Corriente_R3" #renombro columna
+R3<-R3[,-7] #elimino columna 
+R3<-R3[,-5] #elimino columna 
+R3<-R3[,-4] #elimino columna 
+
+R4<-merge(TR4, CR4, by = "fecha", all = FALSE)
+names (R4)[3] = "Tension_R4" #renombro columna
+names (R4)[6] = "Corriente_R4" #renombro columna
+R4<-R4[,-7] #elimino columna 
+R4<-R4[,-5] #elimino columna 
+R4<-R4[,-4] #elimino columna 
+
+R12<-merge(R1, R2, by = "fecha", all = FALSE)
+R34<-merge(R3, R4, by = "fecha", all = FALSE)
+RF<-merge(R12, R34, by = "fecha", all = FALSE)
+RF<-RF[,-11] #elimino columna 
+RF<-RF[,-8] #elimino columna 
+RF<-RF[,-5] #elimino columna 
+
+#Guardar dataset
+
+write.csv(RF, "51GF")
+read.csv("51GF")
+replace(RF, RF$Tension_R1<1,0)
+
+write.csv(X, "51bbdd")
+
+#Limpieza datos
+
+RF$Tension_R1<-replace(RF$Tension_R1, RF$Tension_R1<1,0)
+RF$Tension_R2<-replace(RF$Tension_R2, RF$Tension_R2<1,0)
+RF$Tension_R3<-replace(RF$Tension_R3, RF$Tension_R3<1,0)
+RF$Tension_R4<-replace(RF$Tension_R4, RF$Tension_R4<1,0)
+
+RF$Corriente_R1<-replace(RF$Corriente_R1, RF$Corriente_R1<1,0)
+RF$Corriente_R2<-replace(RF$Corriente_R2, RF$Corriente_R2<1,0)
+RF$Corriente_R3<-replace(RF$Corriente_R3, RF$Corriente_R3<1,0)
+RF$Corriente_R4<-replace(RF$Corriente_R4, RF$Corriente_R4<1,0)
+
+#Calcular el consumo
+
+RF$Potencia_R1<-RF$Tension_R1*RF$Corriente_R1
+RF$Potencia_R2<-RF$Tension_R2*RF$Corriente_R2
+RF$Potencia_R3<-RF$Tension_R3*RF$Corriente_R3
+RF$Potencia_R4<-RF$Tension_R4*RF$Corriente_R4
+
+#GGPLOT pruebas
+
+#install.packages("reshape")
+library(reshape)
+#install.packages("dplyr") # Instalar de manipulaciÃ³n de dataframes "dplyr"
+library(dplyr)
+p1<-select(RF, fecha,Potencia_R1,Potencia_R2 , Potencia_R3,Potencia_R4 )
+
+# Formato long
+p <- melt(p1, id.vars = "fecha")
+
+library(ggplot2)
+
+  ggplot(p, aes(x = fecha, y = value, color = variable))+
+  geom_line()+ 
+    scale_y_continuous("Potencia (W)") + 
+    ggtitle("Potencia Reactores 2022", subtitle = "GoFit Vallehermoso Nado")+
+    theme(plot.title = element_text(face = "bold",                 # Estilo de fuente
+                                    color = 1,                     # Color de la fuente
+                                    size = 13))
