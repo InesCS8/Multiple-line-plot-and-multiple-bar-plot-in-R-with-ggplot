@@ -24,5 +24,5 @@
 6. Gráfic de barres a ggplot
 
 
-![Rplot01](https://user-images.githubusercontent.com/104026026/173429435-afff0f13-3cca-4849-a921-62acc5133d84.svg)
 
+![Rplot](https://user-images.githubusercontent.com/104026026/173429536-b3edceb8-c86f-461d-a68b-90caa39e3382.svg)
