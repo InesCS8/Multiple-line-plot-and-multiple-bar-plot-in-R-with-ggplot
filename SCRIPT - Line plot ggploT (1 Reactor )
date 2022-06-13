@@ -1,0 +1,54 @@
+#0. Importar datos
+
+library(readr)
+X<- read_delim("C:/Users/Admin/Desktop/DEPARTAMENTO X/Resistencia reactores/3 VD.csv", 
+               delim = ";", escape_double = FALSE, trim_ws = TRUE)
+View(X)
+
+#1.crear dataset de tension y intensidad por cada reactor
+
+TR1<-X[X$senalid == "1559",]
+
+
+CR1<-X[X$senalid == "3604",]
+
+
+RF<-merge(TR1, CR1, by = "fecha", all = FALSE)
+names (RF)[3] = "Tension_R1" #renombro columna
+names (RF)[6] = "Corriente_R1" #renombro columna
+RF<-RF[,-7] #elimino columna 
+RF<-RF[,-5] #elimino columna 
+RF<-RF[,-4] #elimino columna 
+
+
+#Limpieza datos
+
+RF$Tension_R1<-replace(RF$Tension_R1, RF$Tension_R1<1,0)
+
+RF$Corriente_R1<-replace(RF$Corriente_R1, RF$Corriente_R1<1,0)
+
+#Calcular el consumo
+
+RF$Potencia_R1<-RF$Tension_R1*RF$Corriente_R1
+
+#GGPLOT 
+
+#install.packages("reshape")
+library(reshape)
+#install.packages("dplyr") # Instalar de manipulaciÃ³n de dataframes "dplyr"
+library(dplyr)
+p1<-select(RF, fecha,Potencia_R1)
+
+# Formato long
+p <- melt(p1, id.vars = "fecha")
+
+library(ggplot2)
+
+ggplot(p, aes(x = fecha, y = value, color = variable, fill=value))+
+  geom_line(alpha=0.7)+ 
+  scale_y_continuous("Potencia (W)") + 
+  ggtitle("Potencia Reactores 2022", subtitle = "Reebok hidroterapia")+
+  theme(plot.title = element_text(face = "bold",                 # Estilo de fuente
+                                  color = 1,                     # Color de la fuente
+                                  size = 13))
+                                  
