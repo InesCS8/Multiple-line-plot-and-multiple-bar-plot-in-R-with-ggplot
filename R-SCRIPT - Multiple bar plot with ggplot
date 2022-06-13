@@ -1,0 +1,50 @@
+#Consumo acumulado
+
+RF$mes <- format(as.POSIXct(RF$fecha),format = "%m")
+CmesR1<-aggregate(RF$Potencia_R1,list(RF$mes),sum)
+names (CmesR1)[2] = "Potencia_R1" #renombro columna
+names (CmesR1)[1] = "Mes" #renombro columna
+#Cmes1<-CmesR1#Solo en equipos con 1 reactor
+
+CmesR2<-aggregate(RF$Potencia_R2,list(RF$mes),sum)
+names (CmesR2)[2] = "Potencia_R2" #renombro columna
+names (CmesR2)[1] = "Mes" #renombro columna
+
+CmesR3<-aggregate(RF$Potencia_R3,list(RF$mes),sum)
+names (CmesR3)[2] = "Potencia_R3" #renombro columna
+names (CmesR3)[1] = "Mes" #renombro columna
+
+CmesR4<-aggregate(RF$Potencia_R4,list(RF$mes),sum)
+names (CmesR4)[2] = "Potencia_R4" #renombro columna
+names (CmesR4)[1] = "Mes" #renombro columna
+
+Cmes1<-merge(CmesR1, CmesR2, by = "Mes", all = FALSE)
+Cmes1<-merge(Cmes1, CmesR3, by = "Mes", all = FALSE)
+Cmes1<-merge(Cmes1, CmesR4, by = "Mes", all = FALSE)
+Cmes1$Instalacion<-c("GF Vallehermoso Nado","GF Vallehermoso Nado","GF Vallehermoso Nado","GF Vallehermoso Nado","GF Vallehermoso Nado")
+
+Cmes1 <- melt(Cmes1, id.vars = c("Instalacion","Mes"))
+
+Todo<-rbind(Todo,Cmes1)
+
+#grafica consumos mensuales
+
+Todo$Mes<-replace(Todo$Mes, Todo$Mes==1, "Enero")
+Todo$Mes<-replace(Todo$Mes, Todo$Mes==2, "Febrero")
+Todo$Mes<-replace(Todo$Mes, Todo$Mes==3, "Marzo")
+Todo$Mes<-replace(Todo$Mes, Todo$Mes==4, "Abril")
+Todo$Mes<-replace(Todo$Mes, Todo$Mes==5, "Mayo")
+
+ggplot(Todo, aes(x =Instalacion , y=value, fill = variable)) + 
+  geom_bar(stat = "identity",position = "dodge")+
+  scale_y_continuous("Potencia (W)")  + 
+  ggtitle("Potencia Acumulda Reactores", subtitle = "Enero-Mayo 2022")
+
+ggplot(Todo, aes(x =Instalacion , y=value, fill = Mes)) + 
+  geom_bar(stat = "identity",position = "dodge")+
+  scale_y_continuous("Potencia (W)")  + 
+  ggtitle("Potencia Acumulda Reactores", subtitle = "Enero-Mayo 2022")
+
+
+#write.csv(Todo, "DatasetDefinitivo1")
+Todo<-read.csv("DatasetDefinitivo")
