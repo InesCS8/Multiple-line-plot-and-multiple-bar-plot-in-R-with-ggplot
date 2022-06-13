@@ -16,3 +16,7 @@
 4. Gràfic de liníes de 4 variables en ggplot
 
 ![Vallehermoso](https://user-images.githubusercontent.com/104026026/173408520-81c9f3fd-4059-4a54-a7f5-7fc3333b50b8.svg)
+
+5. Comparació de les 5 instalacións per mesos.
+
+https://app.flourish.studio/visualisation/10277641/edit
