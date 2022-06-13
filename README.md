@@ -19,4 +19,5 @@
 
 5. Comparació de les 5 instalacións per mesos.
 
-https://app.flourish.studio/visualisation/10277641/edit
+[https://app.flourish.studio/visualisation/10277641/edit](https://public.flourish.studio/visualisation/10277641/)
+
