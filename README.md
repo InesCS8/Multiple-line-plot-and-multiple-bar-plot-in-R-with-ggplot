@@ -11,7 +11,7 @@
 3. Gràfic de liníes de 3 variables en ggplot
 
 ![Sevilla](https://user-images.githubusercontent.com/104026026/173408366-64aaaa3b-6e7b-4bda-a447-3d7f7c58618c.svg)
-![Algeciras](https://user-images.githubusercontent.com/104026026/173408393-97478c17-baa4-4173-b0ba-72c13b85c09c.svg)
+![algeciras01](https://user-images.githubusercontent.com/104026026/173409067-f5481481-02c2-44a0-bb25-8911e689d86e.svg)
 
 4. Gràfic de liníes de 4 variables en ggplot
 
