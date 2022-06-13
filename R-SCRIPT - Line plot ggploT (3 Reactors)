@@ -1,0 +1,127 @@
+#0. Importar datos
+
+library(readr)
+X<- read_delim("C:/Users/Admin/Desktop/DEPARTAMENTO X/Resistencia reactores/79 VD.csv", 
+               delim = ";", escape_double = FALSE, trim_ws = TRUE)
+View(X)
+
+#1.crear dataset de tension y intensidad por cada reactor
+
+TR1<-X[X$senalid == "1559",]
+TR2<-X[X$senalid == "1561",]
+TR3<-X[X$senalid == "1563",]
+
+
+CR1<-X[X$senalid == "3604",]
+CR2<-X[X$senalid == "3605",]
+CR3<-X[X$senalid == "3606",]
+
+
+R1<-merge(TR1, CR1, by = "fecha", all = FALSE)
+names (R1)[3] = "Tension_R1" #renombro columna
+names (R1)[6] = "Corriente_R1" #renombro columna
+R1<-R1[,-7] #elimino columna 
+R1<-R1[,-5] #elimino columna 
+R1<-R1[,-4] #elimino columna 
+
+
+R2<-merge(TR2, CR2, by = "fecha", all = FALSE)
+names (R2)[3] = "Tension_R2" #renombro columna
+names (R2)[6] = "Corriente_R2" #renombro columna
+R2<-R2[,-7] #elimino columna 
+R2<-R2[,-5] #elimino columna 
+R2<-R2[,-4] #elimino columna 
+
+R3<-merge(TR3, CR3, by = "fecha", all = FALSE)
+names (R3)[3] = "Tension_R3" #renombro columna
+names (R3)[6] = "Corriente_R3" #renombro columna
+R3<-R3[,-7] #elimino columna 
+R3<-R3[,-5] #elimino columna 
+R3<-R3[,-4] #elimino columna 
+
+
+R12<-merge(R1, R2, by = "fecha", all = FALSE)
+RF<-merge(R12, R3, by = "fecha", all = FALSE)
+RF<-RF[,-8] #elimino columna 
+RF<-RF[,-5] #elimino columna 
+
+#Limpieza datos
+
+RF$Tension_R1<-replace(RF$Tension_R1, RF$Tension_R1<1,0)
+RF$Tension_R2<-replace(RF$Tension_R2, RF$Tension_R2<1,0)
+RF$Tension_R3<-replace(RF$Tension_R3, RF$Tension_R3<1,0)
+
+RF$Corriente_R1<-replace(RF$Corriente_R1, RF$Corriente_R1<1,0)
+RF$Corriente_R2<-replace(RF$Corriente_R2, RF$Corriente_R2<1,0)
+RF$Corriente_R3<-replace(RF$Corriente_R3, RF$Corriente_R3<1,0)
+
+#Calcular el consumo
+
+RF$Potencia_R1<-RF$Tension_R1*RF$Corriente_R1
+RF$Potencia_R2<-RF$Tension_R2*RF$Corriente_R2
+RF$Potencia_R3<-RF$Tension_R3*RF$Corriente_R3
+
+#GGPLOT pruebas
+
+#install.packages("reshape")
+library(reshape)
+#install.packages("dplyr") # Instalar de manipulaciÃ³n de dataframes "dplyr"
+library(dplyr)
+p1<-select(RF, fecha,Potencia_R1,Potencia_R2 , Potencia_R3)
+
+# Formato long
+p <- melt(p1, id.vars = "fecha")
+
+library(ggplot2)
+
+ggplot(p, aes(x = fecha, y = value, color = variable))+
+  geom_line(alpha=0.7)+ 
+  scale_y_continuous("Potencia (W)") + 
+  ggtitle("Potencia Reactores 2022", subtitle = "GF Sevilla Nado")+
+  theme(plot.title = element_text(face = "bold",                 # Estilo de fuente
+                                  color = 1,                     # Color de la fuente
+                                  size = 13))
+
+#Consumo acumulado
+
+RF$mes <- format(as.POSIXct(RF$fecha),format = "%m")
+CmesR1<-aggregate(RF$Potencia_R1,list(RF$mes),sum)
+names (CmesR1)[2] = "Potencia_R1" #renombro columna
+names (CmesR1)[1] = "Mes" #renombro columna
+
+CmesR2<-aggregate(RF$Potencia_R2,list(RF$mes),sum)
+names (CmesR2)[2] = "Potencia_R2" #renombro columna
+names (CmesR2)[1] = "Mes" #renombro columna
+
+CmesR3<-aggregate(RF$Potencia_R3,list(RF$mes),sum)
+names (CmesR3)[2] = "Potencia_R3" #renombro columna
+names (CmesR3)[1] = "Mes" #renombro columna
+
+Cmes1<-merge(CmesR1, CmesR2, by = "Mes", all = FALSE)
+Cmes1<-merge(Cmes1, CmesR3, by = "Mes", all = FALSE)
+Cmes1$Instalacion<-c("GF San Miguel Nado","GF San Miguel Nado","GF San Miguel Nado","GF San Miguel Nado","GF San Miguel Nado")
+
+Cmes<-merge(CmesR1, CmesR2, by = "Mes", all = FALSE)
+Cmes<-merge(Cmes, CmesR3, by = "Mes", all = FALSE)
+Cmes$Instalacion<-c("BF Algeciras Nado","BF Algeciras Nado","BF Algeciras Nado","BF Algeciras Nado","BF Algeciras Nado")
+
+#Todo<-rbind(Cmes,Cmes1)
+
+#grafica consumos mensuales
+Todo <- melt(Todo, id.vars = c("Instalacion","Mes"))
+Todo$Potencia<-replace(Todo, )
+
+ggplot(Todo, aes(x =Instalacion , y=value, fill = variable)) + 
+  geom_bar(stat = "identity",position = "dodge")+
+  scale_y_continuous("Potencia (W)")  + 
+  ggtitle("Potencia Acumulda Reactores", subtitle = "Enero-Mayo 2022")
+
+ggplot(Todo[Todo$Mes=='05',], aes(x =Instalacion , y=value, fill = variable)) + 
+  geom_bar(stat = "identity",position = "dodge")+
+  scale_y_continuous("Potencia (W)") + 
+  ggtitle("Potencia Acumulda Reactores", subtitle = "Mayo 2022")
+
+ggplot(Todo, aes(x =Instalacion , y=value, fill = Mes)) + 
+  geom_bar(stat = "identity",position = "dodge")+
+  scale_y_continuous("Potencia (W)")  + 
+  ggtitle("Potencia Acumulda Reactores", subtitle = "Enero-Mayo 2022")
