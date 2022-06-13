@@ -17,7 +17,12 @@
 
 ![Vallehermoso](https://user-images.githubusercontent.com/104026026/173408520-81c9f3fd-4059-4a54-a7f5-7fc3333b50b8.svg)
 
-5. Comparació de les 5 instalacións per mesos.
+5. Gràfic de barres múltiple interactiu a flourish studio
 
 [https://app.flourish.studio/visualisation/10277641/edit](https://public.flourish.studio/visualisation/10277641/)
+
+6. Gráfic de barres a ggplot
+
+
+![Rplot01](https://user-images.githubusercontent.com/104026026/173429435-afff0f13-3cca-4849-a921-62acc5133d84.svg)
 
